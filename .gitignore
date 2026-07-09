@@ -1,0 +1,6 @@
+.venv/
+venv/
+openprinttag-database/
+.DS_Store
+optd.db
+*.bak
