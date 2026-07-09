@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="sv">
+<head>
+    <meta charset="utf-8">
+    <title>OpenPrintTagDatabase Filament Search</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f7f7f7;
+            color: #111;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
+            margin-top: 4px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin: 0 0 18px 0;
+            font-weight: 400;
+        }
+
+        h1 strong {
+            font-weight: 800;
+        }
+
+        .stats {
+            font-size: 18px;
+            color: #444;
+            margin-bottom: 36px;
+        }
+
+        form {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 32px;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr auto;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        input {
+            font-size: 18px;
+            padding: 12px 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 13px 30px;
+            border: 0;
+            border-radius: 6px;
+            background: #1a73e8;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #155fc0;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 0.8fr 0.9fr;
+            gap: 32px;
+            align-items: start;
+            margin-bottom: 32px;
+        }
+
+        .hits {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+        }
+
+        .note {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 18px;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 22px;
+        }
+
+        .guide-panel {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 18px;
+        }
+
+        .panel-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .best-swatch {
+            width: 100%;
+            height: 70px;
+            border: 1px solid #aaa;
+            border-radius: 8px;
+            box-shadow: 3px 3px 6px rgba(0,0,0,.20);
+            margin-bottom: 18px;
+        }
+
+        .best-brand {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .best-name {
+            font-size: 20px;
+            margin-bottom: 14px;
+        }
+
+        .best-delta {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .best-photo {
+            max-width: 120px;
+            max-height: 120px;
+            margin-top: 16px;
+        }
+
+        .info-row {
+            margin-bottom: 4px;
+        }
+
+        .searched-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .searched-swatch {
+            width: 170px;
+            height: 60px;
+            border: 2px solid #999;
+            border-radius: 8px;
+            box-shadow: 3px 3px 6px rgba(0,0,0,.25);
+        }
+
+        .hex-code {
+            font-family: monospace;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .closest-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .closest-swatch {
+            width: 100px;
+            height: 30px;
+            border: 1px solid #999;
+            border-radius: 5px;
+        }
+
+        .closest-hex {
+            font-family: monospace;
+            font-size: 16px;
+        }
+
+        .closest-delta {
+            font-size: 16px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        table.results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 18px;
+        }
+
+        table.results-table th {
+            text-align: left;
+            background: #f1f1f1;
+            padding: 18px 24px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table.results-table td {
+            padding: 18px 24px;
+            border-bottom: 1px solid #e1e1e1;
+            border-right: 1px solid #e1e1e1;
+            vertical-align: middle;
+        }
+
+        table.results-table th:last-child,
+        table.results-table td:last-child {
+            border-right: none;
+        }
+
+        table.guide-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+            background: white;
+        }
+
+        table.guide-table th {
+            text-align: left;
+            background: #f1f1f1;
+            padding: 12px 14px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table.guide-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e1e1e1;
+        }
+
+        table.guide-table td:first-child {
+            width: 70px;
+            white-space: nowrap;
+        }
+
+        .color-cell {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            white-space: nowrap;
+        }
+
+        .swatch {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        .photo {
+            max-width: 90px;
+            max-height: 90px;
+        }
+
+        a {
+            color: #006ee6;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .no-results {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <div>
+        <h1>OpenPrintTagDatabase <strong>Filament Search</strong></h1>
+
+        <div class="stats">
+            {{ stats.brands }} brands •
+            {{ stats.materials }} materials •
+            {{ stats.filaments }} filaments
+        </div>
+    </div>
+
+    <img class="logo" src="{{ url_for('static', filename='images/opt.svg') }}" alt="OpenPrintTag">
+</div>
+
+<form method="get" action="/">
+    <div class="field">
+        <label for="manufacturer">Manufacturer</label>
+        <input id="manufacturer" type="text" name="manufacturer" value="{{ manufacturer }}">
+    </div>
+
+    <div class="field">
+        <label for="country">Country</label>
+        <input id="country" type="text" name="country" value="{{ country }}" placeholder="SE, US, CN...">
+    </div>
+
+    <div class="field">
+        <label for="material">Material</label>
+        <input id="material" type="text" name="material" value="{{ material }}">
+    </div>
+
+    <div class="field">
+        <label for="name">Name / Color name</label>
+        <input id="name" type="text" name="name" value="{{ name }}">
+    </div>
+
+    <div class="field">
+        <label for="color">HEX Color</label>
+        <input id="color" type="text" name="color" value="{{ color }}">
+    </div>
+
+    <button type="submit">Search</button>
+</form>
+
+{% if results %}
+
+<div class="summary-grid">
+
+    <div>
+        <div class="hits">Hits: {{ results|length }}</div>
+
+        {% if results[0].distance is defined %}
+            <div class="note">
+                No exact HEX match found. Showing the closest colors ranked by ΔE (CIEDE2000).
+            </div>
+        {% endif %}
+
+        <div class="panel">
+            <div class="panel-title">Best Match</div>
+
+            <div class="best-swatch" style="background:{{ results[0].color[:7] }};"></div>
+
+            <div class="best-brand">{{ results[0].brand }}</div>
+            <div class="best-name">{{ results[0].name }}</div>
+
+            {% if results[0].distance is defined %}
+                <div class="best-delta">ΔE {{ results[0].distance }}</div>
+            {% else %}
+                <div class="best-delta">Exact HEX match</div>
+            {% endif %}
+
+            <div class="info-row">Country: {{ results[0].country }}</div>
+            <div class="info-row">Material: {{ results[0].material }}</div>
+            <div class="info-row">Color: {{ results[0].color }}</div>
+
+            {% if results[0].photo %}
+                <img class="best-photo" src="{{ results[0].photo }}" alt="">
+            {% endif %}
+
+        </div>
+    </div>
+
+    <div class="guide-panel">
+        <div class="section-title">ΔE Color Difference Guide</div>
+
+        <table class="guide-table">
+            <tr>
+                <th>ΔE</th>
+                <th>Perceived difference</th>
+            </tr>
+            <tr>
+                <td>&lt; 1</td>
+                <td>No visible difference</td>
+            </tr>
+            <tr>
+                <td>1–2</td>
+                <td>Almost indistinguishable</td>
+            </tr>
+            <tr>
+                <td>2–5</td>
+                <td>Very similar</td>
+            </tr>
+            <tr>
+                <td>5–10</td>
+                <td>Clearly different</td>
+            </tr>
+            <tr>
+                <td>&gt; 10</td>
+                <td>Different color</td>
+            </tr>
+        </table>
+    <hr style="margin:20px 0; border:0; border-top:1px solid #ddd;">
+
+<div class="section-title" style="font-size:20px;">
+
+    Search information
+</div>
+<div class="info-row">Search color: <strong>{{ search_color }}</strong></div>
+<div class="info-row">Compared against: <strong>{{ stats.filaments }}</strong> filaments</div>
+<div class="info-row">Search method: <strong>CIEDE2000</strong></div>
+{% if results[0].distance is defined %}
+    <div class="info-row">Exact match: <strong>No</strong></div>
+    <div class="info-row">Returned: <strong>{{ results|length }}</strong> closest colors</div>
+{% else %}
+    <div class="info-row">Exact match: <strong>Yes</strong></div>
+    <div class="info-row">Returned: <strong>{{ results|length }}</strong> matches</div>
+{% endif %}
+    </div>
+
+    {% if color %}
+    <div>
+        <div class="section-title">Searched color</div>
+
+        <div class="searched-row">
+            <div class="searched-swatch" style="background:{{ search_color[:7] }};"></div>
+            <div class="hex-code">{{ search_color }}</div>
+        </div>
+
+        {% if results[0].distance is defined %}
+            <div class="section-title">Closest colors</div>
+
+            {% for item in results[:3] %}
+                <div class="closest-row">
+                    <div class="closest-swatch" style="background:{{ item.color[:7] }};"></div>
+                    <div class="closest-hex">{{ item.color }}</div>
+                    <div class="closest-delta">ΔE {{ item.distance }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+
+<table class="results-table">
+    <thead>
+        <tr>
+            <th>Brand</th>
+            <th>Country</th>
+            <th>Name</th>
+            <th>Material</th>
+            <th>Color</th>
+
+            {% if results[0].distance is defined %}
+                <th>ΔE</th>
+            {% endif %}
+
+            <th>Photo</th>
+            <th>Url</th>
+            <th>Properties</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in results %}
+            <tr>
+                <td>{{ item.brand }}</td>
+                <td>{{ item.country }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.material }}</td>
+
+                <td>
+                    <div class="color-cell">
+                        {% if item.color %}
+                            <div class="swatch" style="background: {{ item.color[:7] }};"></div>
+                            <span>{{ item.color }}</span>
+                        {% endif %}
+                    </div>
+                </td>
+
+                {% if results[0].distance is defined %}
+                    <td>{{ item.distance }}</td>
+                {% endif %}
+
+                <td>
+                    {% if item.photo %}
+                        <img class="photo" src="{{ item.photo }}" alt="">
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if item.url %}
+                        <a href="{{ item.url }}" target="_blank">Link ↗</a>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if item.properties_json and item.properties_json != "{}" %}
+                        <a href="{{ url_for('properties_page', filament_id=item.id, return_query=request.query_string.decode()) }}">
+                            Properties
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% elif manufacturer or country or material or name or color %}
+    <p class="no-results">No results found.</p>
+{% endif %}
+
+</body>
+</html>

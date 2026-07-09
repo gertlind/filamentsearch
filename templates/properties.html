@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="sv">
+<head>
+    <meta charset="utf-8">
+    <title>{{ name }} - Properties</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f7f7f7;
+            color: #111;
+        }
+
+        a {
+            color: #0066dd;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 24px;
+            max-width: 900px;
+        }
+
+        .header {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        img {
+            max-width: 120px;
+            max-height: 120px;
+        }
+
+        .color-box {
+            width: 38px;
+            height: 38px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+
+<p>
+
+    <a href="/{% if return_query %}?{{ return_query }}{% endif %}">
+        ← Back to search
+    </a>
+</p>
+
+<div class="card">
+
+    <div class="header">
+
+        {% if photo %}
+            <img src="{{ photo }}" alt="Photo">
+        {% endif %}
+
+        <div>
+            <h1>{{ name }}</h1>
+
+            <p>{{ brand }}</p>
+
+            {% if color %}
+                <p>
+                    <span class="color-box"
+                          style="background-color: {{ color[:7] }}">
+                    </span>
+
+                    {{ color }}
+                </p>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <h2>Properties</h2>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for key, value in properties.items() %}
+
+            <tr>
+                <td>{{ key.replace("_", " ").title() }}</td>
+                <td>{{ value }}</td>
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>
