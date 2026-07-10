@@ -1,8 +1,8 @@
 #!/bin/bash
 
 set -e
-cd ~/python/OpenPrintTagDatabase-Color-Search-SQL/openprinttag-database
+cd ~/python/filamentsearch/openprinttag-database
 git pull
-cd ~/python/OpenPrintTagDatabase-Color-Search-SQL
+cd ~/python/filamentsearch
 .venv/bin/python build_db.py
-sudo systemctl restart optd_sql.service
+sudo service optdsearch_ciede2000 restart
